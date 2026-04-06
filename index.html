@@ -10,106 +10,76 @@
 <link rel="manifest" href="manifest.json">
 <title>Home Inventory</title>
 <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
-<link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-/* ── RESET & ROOT ──────────────────────────────────── */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 :root{
   --ink-0:#f4f5f7;--ink-1:#cdd0d8;--ink-2:#8b91a0;--ink-3:#454b5a;
   --bg-0:#111318;--bg-1:#181c24;--bg-2:#1e2330;--bg-3:#252b3b;
-  --accent:#4f7bff;--accent-dim:#2a3f80;
+  --accent:#4f7bff;--accent-dim:#1a2550;
   --green:#22c55e;--green-dim:#14532d;
   --red:#f43f5e;--red-dim:#4c0519;
   --amber:#f59e0b;--amber-dim:#451a03;
   --radius:14px;--radius-sm:9px;--radius-xs:6px;
-  --font:'DM Sans',system-ui,sans-serif;
-  --mono:'DM Mono',monospace;
+  --font:'DM Sans',system-ui,sans-serif;--mono:'DM Mono',monospace;
 }
-html,body{
-  height:100%;background:var(--bg-0);color:var(--ink-0);
-  font-family:var(--font);font-size:15px;line-height:1.5;
-  -webkit-font-smoothing:antialiased;overscroll-behavior:none;
-}
-
-/* ── LAYOUT ────────────────────────────────────────── */
+html,body{height:100%;background:var(--bg-0);color:var(--ink-0);font-family:var(--font);
+  font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased;overscroll-behavior:none}
 #app{max-width:430px;margin:0 auto;min-height:100dvh;display:flex;flex-direction:column}
 
-/* ── NAV BAR ───────────────────────────────────────── */
-#nav{
-  position:sticky;bottom:0;z-index:100;
-  background:var(--bg-1);
-  border-top:1px solid var(--bg-3);
-  display:flex;padding:8px 0 calc(8px + env(safe-area-inset-bottom));
-}
-.nav-btn{
-  flex:1;display:flex;flex-direction:column;align-items:center;
-  gap:3px;padding:6px 4px;border:none;background:transparent;
-  color:var(--ink-2);font-size:10px;font-weight:600;font-family:var(--font);
-  letter-spacing:.3px;cursor:pointer;transition:color .15s;
-}
-.nav-btn .icon{font-size:22px;line-height:1;transition:transform .15s}
+/* NAV */
+#nav{position:sticky;bottom:0;z-index:100;background:var(--bg-1);
+  border-top:1px solid var(--bg-3);display:flex;
+  padding:8px 0 calc(8px + env(safe-area-inset-bottom))}
+.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;
+  padding:6px 4px;border:none;background:transparent;color:var(--ink-2);
+  font-size:10px;font-weight:600;font-family:var(--font);letter-spacing:.3px;cursor:pointer}
+.nav-btn .ni{font-size:22px;line-height:1;transition:transform .15s}
 .nav-btn.active{color:var(--accent)}
-.nav-btn.active .icon{transform:scale(1.1)}
+.nav-btn.active .ni{transform:scale(1.1)}
 
-/* ── SCREENS ───────────────────────────────────────── */
-.screen{
-  flex:1;padding-bottom:80px;overflow-y:auto;
-  animation:fadeIn .18s ease;
-}
+/* SCREENS */
+.screen{flex:1;padding-bottom:80px;overflow-y:auto;animation:fadeIn .18s ease}
 .screen.hidden{display:none}
 @keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 
-/* ── PAGE HEADER ───────────────────────────────────── */
-.page-hdr{
-  padding:20px 18px 14px;
-  border-bottom:1px solid var(--bg-2);
-  position:sticky;top:0;background:var(--bg-0);z-index:10;
-}
-.page-hdr h1{font-size:22px;font-weight:700;letter-spacing:-.4px}
+/* PAGE HEADER */
+.page-hdr{padding:18px 18px 12px;border-bottom:1px solid var(--bg-2);
+  position:sticky;top:0;background:var(--bg-0);z-index:10}
+.page-hdr h1{font-size:22px;font-weight:700;letter-spacing:-.4px;display:flex;align-items:center;gap:8px}
 .page-hdr p{font-size:13px;color:var(--ink-2);margin-top:2px}
+.sync-dot{width:8px;height:8px;border-radius:50%;background:var(--bg-3);flex-shrink:0}
+.sync-dot.live{background:var(--green);box-shadow:0 0 6px var(--green)}
+.sync-dot.pending{background:var(--amber)}
+.sync-dot.error{background:var(--red)}
 
-/* ── SECTION LABEL ─────────────────────────────────── */
-.sec-label{
-  font-size:11px;font-weight:700;letter-spacing:.8px;
-  text-transform:uppercase;color:var(--ink-2);
-  padding:16px 18px 8px;
-}
+/* SECTION LABEL */
+.sec-label{font-size:11px;font-weight:700;letter-spacing:.8px;
+  text-transform:uppercase;color:var(--ink-2);padding:14px 18px 7px}
 
-/* ── CARD ──────────────────────────────────────────── */
-.card{
-  background:var(--bg-1);border:1px solid var(--bg-3);
-  border-radius:var(--radius);margin:0 14px 10px;padding:14px;
-}
+/* CARD */
+.card{background:var(--bg-1);border:1px solid var(--bg-3);
+  border-radius:var(--radius);margin:0 14px 10px;padding:14px}
 
-/* ── FORM ELEMENTS ─────────────────────────────────── */
-.field{margin-bottom:10px}
-.field:last-child{margin-bottom:0}
+/* FORM */
+.field{margin-bottom:10px}.field:last-child{margin-bottom:0}
 .field label{display:block;font-size:12px;font-weight:600;color:var(--ink-2);margin-bottom:5px;letter-spacing:.2px}
-input[type=text],input[type=number],textarea,select{
-  width:100%;padding:11px 13px;background:var(--bg-2);
-  border:1.5px solid var(--bg-3);border-radius:var(--radius-sm);
-  color:var(--ink-0);font-size:15px;font-family:var(--font);
-  transition:border-color .15s;appearance:none;-webkit-appearance:none;
-}
-input:focus,select:focus,textarea:focus{
-  outline:none;border-color:var(--accent);background:var(--bg-2);
-}
+input[type=text],input[type=number],input[type=password],textarea,select{
+  width:100%;padding:11px 13px;background:var(--bg-2);border:1.5px solid var(--bg-3);
+  border-radius:var(--radius-sm);color:var(--ink-0);font-size:15px;font-family:var(--font);
+  transition:border-color .15s;appearance:none;-webkit-appearance:none}
+input:focus,select:focus{outline:none;border-color:var(--accent)}
 input::placeholder{color:var(--ink-3)}
-select{
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='9' fill='none'%3E%3Cpath d='M1 1l6 6 6-6' stroke='%238b91a0' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
-  background-repeat:no-repeat;background-position:right 13px center;padding-right:36px;
-}
+select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='9' fill='none'%3E%3Cpath d='M1 1l6 6 6-6' stroke='%238b91a0' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 13px center;padding-right:36px}
 .row-2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.hint{font-size:12px;color:var(--ink-2);margin-top:5px;line-height:1.4}
 
-/* ── BUTTONS ───────────────────────────────────────── */
-.btn{
-  display:flex;align-items:center;justify-content:center;gap:7px;
+/* BUTTONS */
+.btn{display:flex;align-items:center;justify-content:center;gap:7px;
   padding:13px 18px;border:none;border-radius:var(--radius-sm);
-  font-size:15px;font-weight:600;font-family:var(--font);
-  cursor:pointer;transition:opacity .15s,transform .1s;
-  width:100%;
-}
+  font-size:15px;font-weight:600;font-family:var(--font);cursor:pointer;
+  transition:opacity .15s,transform .1s;width:100%}
 .btn:active{opacity:.75;transform:scale(.97)}
 .btn:disabled{opacity:.35;cursor:not-allowed;transform:none!important}
 .btn-primary{background:var(--accent);color:#fff}
@@ -118,203 +88,149 @@ select{
 .btn-ghost{background:var(--bg-2);color:var(--ink-1);border:1px solid var(--bg-3)}
 .btn-row{display:flex;gap:10px;margin:0 14px 10px}
 
-/* ── SCANNER ───────────────────────────────────────── */
-#reader-wrap{
-  margin:0 14px 0;border-radius:var(--radius);overflow:hidden;
-  background:#000;border:1.5px solid var(--bg-3);position:relative;
-}
+/* SCANNER */
+#reader-wrap{margin:0 14px;border-radius:var(--radius);overflow:hidden;
+  background:#000;border:1.5px solid var(--bg-3);position:relative}
 #reader{width:100%}
 #reader video,#reader > div{border-radius:0!important}
 #reader img{display:none}
-#reader div[style*="border"]{border-color:rgba(79,123,255,.6)!important}
+.scan-overlay{position:absolute;inset:0;pointer-events:none;
+  display:flex;align-items:center;justify-content:center}
+.sc{width:220px;height:130px;position:relative}
+.sc::before,.sc::after,.sc span::before,.sc span::after{
+  content:'';position:absolute;width:22px;height:22px;border-color:#4f7bff;border-style:solid}
+.sc::before{top:0;left:0;border-width:3px 0 0 3px;border-radius:4px 0 0 0}
+.sc::after{top:0;right:0;border-width:3px 3px 0 0;border-radius:0 4px 0 0}
+.sc span::before{bottom:0;left:0;border-width:0 0 3px 3px;border-radius:0 0 0 4px}
+.sc span::after{bottom:0;right:0;border-width:0 3px 3px 0;border-radius:0 0 4px 0}
+#scan-label{text-align:center;font-size:13px;color:var(--ink-2);padding:8px 14px 0;font-weight:500}
 
-.scan-overlay{
-  position:absolute;inset:0;pointer-events:none;
-  display:flex;align-items:center;justify-content:center;
-}
-.scan-corners{
-  width:220px;height:130px;position:relative;
-}
-.scan-corners::before,.scan-corners::after,
-.scan-corners span::before,.scan-corners span::after{
-  content:'';position:absolute;width:22px;height:22px;border-color:#4f7bff;border-style:solid;
-}
-.scan-corners::before{top:0;left:0;border-width:3px 0 0 3px;border-radius:4px 0 0 0}
-.scan-corners::after{top:0;right:0;border-width:3px 3px 0 0;border-radius:0 4px 0 0}
-.scan-corners span::before{bottom:0;left:0;border-width:0 0 3px 3px;border-radius:0 0 0 4px}
-.scan-corners span::after{bottom:0;right:0;border-width:0 3px 3px 0;border-radius:0 0 4px 0}
-
-#scan-label{
-  text-align:center;font-size:13px;color:var(--ink-2);
-  padding:9px 14px 0;font-weight:500;
-}
-
-/* ── ITEM PREVIEW CARD ─────────────────────────────── */
+/* PREVIEW */
 #item-preview{display:none;margin:10px 14px 0}
 #item-preview.show{display:block}
 #preview-name{font-size:18px;font-weight:700;margin-bottom:4px}
 #preview-name.unknown{color:var(--amber)}
 .chip-row{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
-.chip{
-  font-size:12px;font-weight:600;padding:3px 10px;border-radius:20px;
-  border:1.5px solid var(--bg-3);color:var(--ink-2);background:var(--bg-2);
-}
-.chip.c-green{border-color:var(--green);color:var(--green);background:var(--green-dim)}
-.chip.c-amber{border-color:var(--amber);color:var(--amber);background:var(--amber-dim)}
-.chip.c-red  {border-color:var(--red);  color:var(--red);  background:var(--red-dim)}
-.chip.c-blue {border-color:var(--accent);color:var(--accent);background:var(--accent-dim)}
+.chip{font-size:12px;font-weight:600;padding:3px 10px;border-radius:20px;
+  border:1.5px solid var(--bg-3);color:var(--ink-2);background:var(--bg-2)}
+.chip.cg{border-color:var(--green);color:var(--green);background:var(--green-dim)}
+.chip.ca{border-color:var(--amber);color:var(--amber);background:var(--amber-dim)}
+.chip.cr{border-color:var(--red);  color:var(--red);  background:var(--red-dim)}
+.chip.cb{border-color:var(--accent);color:var(--accent);background:var(--accent-dim)}
 
-/* ── STATUS PILL ───────────────────────────────────── */
-#status{
-  margin:8px 14px 0;padding:9px 14px;border-radius:var(--radius-sm);
+/* STATUS */
+#status{margin:8px 14px 0;padding:9px 14px;border-radius:var(--radius-sm);
   font-size:13px;font-weight:500;display:flex;align-items:center;gap:7px;
-  transition:all .2s;min-height:38px;
-}
+  transition:all .2s;min-height:38px}
 #status.idle   {background:transparent;color:var(--ink-2)}
 #status.loading{background:var(--bg-2);color:var(--ink-2)}
 #status.ok     {background:var(--green-dim);color:var(--green);border:1px solid #166534}
 #status.err    {background:var(--red-dim);  color:var(--red);  border:1px solid #881337}
 #status.warn   {background:var(--amber-dim);color:var(--amber);border:1px solid #78350f}
-#status.info   {background:var(--accent-dim);color:var(--accent);border:1px solid var(--accent-dim)}
+#status.info   {background:var(--accent-dim);color:var(--accent);border:1px solid #1e3a8a}
 .spin{display:inline-block;animation:spin .6s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 
-/* ── INVENTORY LIST ────────────────────────────────── */
-.inv-item{
-  display:flex;align-items:center;gap:12px;
-  padding:12px 14px;border-bottom:1px solid var(--bg-2);
-  cursor:pointer;transition:background .1s;
-}
+/* INVENTORY LIST */
+.inv-item{display:flex;align-items:center;gap:12px;padding:12px 14px;
+  border-bottom:1px solid var(--bg-2);cursor:pointer;transition:background .1s}
 .inv-item:last-child{border-bottom:none}
 .inv-item:active{background:var(--bg-2)}
-.inv-icon{
-  width:40px;height:40px;border-radius:10px;
-  background:var(--bg-2);display:flex;align-items:center;
-  justify-content:center;font-size:20px;flex-shrink:0;
-}
+.inv-icon{width:40px;height:40px;border-radius:10px;background:var(--bg-2);
+  display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
 .inv-info{flex:1;min-width:0}
 .inv-name{font-weight:600;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .inv-meta{font-size:12px;color:var(--ink-2);margin-top:1px}
-.inv-qty{
-  font-size:16px;font-weight:700;min-width:32px;
-  text-align:right;font-family:var(--mono);
-}
-.inv-qty.low{color:var(--amber)}
-.inv-qty.zero{color:var(--red)}
-.inv-qty.ok{color:var(--green)}
+.inv-qty{font-size:16px;font-weight:700;min-width:32px;text-align:right;font-family:var(--mono)}
+.inv-qty.low{color:var(--amber)}.inv-qty.zero{color:var(--red)}.inv-qty.ok{color:var(--green)}
 
-/* ── FILTER TABS ───────────────────────────────────── */
-.filter-scroll{
-  display:flex;gap:8px;overflow-x:auto;
-  padding:10px 14px;scrollbar-width:none;
-}
+/* FILTER TABS */
+.filter-scroll{display:flex;gap:8px;overflow-x:auto;padding:10px 14px;scrollbar-width:none}
 .filter-scroll::-webkit-scrollbar{display:none}
-.filter-tab{
-  flex-shrink:0;padding:7px 14px;border-radius:20px;
-  font-size:13px;font-weight:600;border:1.5px solid var(--bg-3);
-  background:var(--bg-2);color:var(--ink-2);cursor:pointer;
-  white-space:nowrap;transition:all .15s;
-}
-.filter-tab.active{
-  background:var(--accent);border-color:var(--accent);color:#fff;
-}
+.filter-tab{flex-shrink:0;padding:7px 14px;border-radius:20px;font-size:13px;font-weight:600;
+  border:1.5px solid var(--bg-3);background:var(--bg-2);color:var(--ink-2);cursor:pointer;white-space:nowrap}
+.filter-tab.active{background:var(--accent);border-color:var(--accent);color:#fff}
 
-/* ── SHOPPING LIST ─────────────────────────────────── */
-.shop-item{
-  display:flex;align-items:center;gap:12px;
-  padding:11px 14px;border-bottom:1px solid var(--bg-2);
-  cursor:pointer;transition:background .1s;
-}
+/* SHOPPING */
+.shop-item{display:flex;align-items:center;gap:12px;padding:11px 14px;
+  border-bottom:1px solid var(--bg-2);cursor:pointer}
 .shop-item:last-child{border-bottom:none}
-.shop-check{
-  width:22px;height:22px;border-radius:6px;
-  border:2px solid var(--bg-3);flex-shrink:0;
-  display:flex;align-items:center;justify-content:center;
-  transition:all .15s;
-}
+.shop-check{width:22px;height:22px;border-radius:6px;border:2px solid var(--bg-3);
+  flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .15s}
 .shop-check.checked{background:var(--green);border-color:var(--green)}
 .shop-check.checked::after{content:'✓';font-size:13px;color:#fff;font-weight:700}
 .shop-name{flex:1;font-size:14px;font-weight:500}
 .shop-name.checked{text-decoration:line-through;color:var(--ink-2)}
 .shop-del{padding:4px 8px;background:none;border:none;color:var(--ink-3);cursor:pointer;font-size:18px}
 
-/* ── SETTINGS ──────────────────────────────────────── */
-.setting-row{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:14px;border-bottom:1px solid var(--bg-2);
-}
+/* SETTINGS */
+.setting-row{display:flex;align-items:center;justify-content:space-between;
+  padding:13px 14px;border-bottom:1px solid var(--bg-2)}
 .setting-row:last-child{border-bottom:none}
 .setting-label{font-size:14px;font-weight:500}
 .setting-desc{font-size:12px;color:var(--ink-2);margin-top:2px}
-.setting-action{
-  padding:7px 14px;border-radius:var(--radius-xs);font-size:13px;
-  font-weight:600;border:1.5px solid var(--bg-3);background:var(--bg-2);
-  color:var(--ink-1);cursor:pointer;white-space:nowrap;font-family:var(--font);
-}
+.setting-val{font-size:13px;color:var(--ink-2);font-family:var(--mono)}
+.setting-action{padding:7px 14px;border-radius:var(--radius-xs);font-size:13px;font-weight:600;
+  border:1.5px solid var(--bg-3);background:var(--bg-2);color:var(--ink-1);cursor:pointer;
+  white-space:nowrap;font-family:var(--font)}
 .setting-action.danger{border-color:var(--red);color:var(--red)}
+.setting-action.success{border-color:var(--green);color:var(--green)}
 
-/* ── DETAIL MODAL ──────────────────────────────────── */
-#modal-bg{
-  display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);
-  z-index:200;align-items:flex-end;justify-content:center;
-}
+/* SYNC SETUP PANEL */
+#sync-panel{background:var(--bg-1);border:1.5px solid var(--accent-dim);
+  border-radius:var(--radius);margin:0 14px 10px;padding:16px}
+#sync-panel h3{font-size:15px;font-weight:700;margin-bottom:4px;display:flex;align-items:center;gap:8px}
+#sync-panel p{font-size:13px;color:var(--ink-2);margin-bottom:14px;line-height:1.5}
+.sync-steps{font-size:13px;color:var(--ink-2);margin-bottom:14px;padding-left:0;list-style:none}
+.sync-steps li{display:flex;gap:8px;margin-bottom:8px;line-height:1.5}
+.sync-steps li::before{content:attr(data-n);background:var(--accent);color:#fff;
+  width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:10px;font-weight:700;flex-shrink:0;margin-top:2px}
+.sync-steps a{color:var(--accent);text-decoration:none}
+code{background:var(--bg-2);border:1px solid var(--bg-3);border-radius:4px;
+  padding:1px 5px;font-size:12px;font-family:var(--mono)}
+
+/* MODAL */
+#modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);
+  z-index:200;align-items:flex-end;justify-content:center}
 #modal-bg.show{display:flex}
-#modal{
-  background:var(--bg-1);border-radius:var(--radius) var(--radius) 0 0;
+#modal{background:var(--bg-1);border-radius:var(--radius) var(--radius) 0 0;
   width:100%;max-width:430px;padding:20px 18px calc(20px + env(safe-area-inset-bottom));
-  border-top:1px solid var(--bg-3);
-  animation:slideUp .2s ease;
-}
+  border-top:1px solid var(--bg-3);animation:slideUp .2s ease}
 @keyframes slideUp{from{transform:translateY(100%)}to{transform:none}}
-.modal-title{font-size:17px;font-weight:700;margin-bottom:4px}
+.modal-title{font-size:17px;font-weight:700;margin-bottom:2px}
 .modal-barcode{font-size:11px;color:var(--ink-2);font-family:var(--mono);margin-bottom:14px}
 
-/* ── EMPTY STATE ───────────────────────────────────── */
+/* EMPTY STATE */
 .empty{text-align:center;padding:48px 24px;color:var(--ink-2)}
 .empty .icon{font-size:44px;margin-bottom:12px}
 .empty p{font-size:14px}
-
-/* ── OFFLINE BANNER ────────────────────────────────── */
-#offline-bar{
-  display:none;background:var(--amber-dim);color:var(--amber);
-  border-bottom:1px solid var(--amber);padding:7px 16px;
-  font-size:12px;font-weight:600;text-align:center;
-}
-#offline-bar.show{display:block}
 </style>
 </head>
 <body>
 <div id="app">
 
-<!-- Offline -->
-<div id="offline-bar">⚠ Offline — changes saved locally, will export when ready</div>
-
-<!-- ════════════════ SCAN SCREEN ════════════════ -->
+<!-- ════════ SCAN SCREEN ════════ -->
 <div id="screen-scan" class="screen">
   <div class="page-hdr">
-    <h1>📦 Inventory</h1>
-    <p>Scan or enter items to track</p>
+    <h1>📦 Home Inventory <span class="sync-dot" id="sync-dot" title="Sync status"></span></h1>
+    <p id="sync-status-label">Local only — set up sync in Export tab</p>
   </div>
 
   <div class="sec-label">CAMERA SCANNER</div>
   <div id="reader-wrap">
     <div id="reader"></div>
-    <div class="scan-overlay"><div class="scan-corners"><span></span></div></div>
+    <div class="scan-overlay"><div class="sc"><span></span></div></div>
   </div>
   <div id="scan-label">Point camera at a barcode</div>
 
-  <!-- Item preview (shown after scan) -->
   <div id="item-preview" class="card">
     <div style="font-size:11px;font-weight:700;letter-spacing:.5px;color:var(--ink-2);margin-bottom:6px" id="preview-src">SCANNED ITEM</div>
     <div id="preview-name">Waiting…</div>
     <div class="chip-row" id="preview-chips"></div>
-    <div class="field">
-      <label>Item name</label>
-      <input type="text" id="p-name" placeholder="e.g. Bush's Baked Beans 28oz">
-    </div>
+    <div class="field"><label>Item name</label><input type="text" id="p-name" placeholder="e.g. Bush's Baked Beans 28oz"></div>
     <div class="row-2">
-      <div class="field">
-        <label>Category</label>
+      <div class="field"><label>Category</label>
         <select id="p-cat">
           <option value="Food">🥫 Food</option>
           <option value="Electronics">📱 Electronics</option>
@@ -322,15 +238,10 @@ select{
           <option value="Other">📦 Other</option>
         </select>
       </div>
-      <div class="field">
-        <label>Quantity</label>
-        <input type="number" id="p-qty" value="1" min="1">
-      </div>
+      <div class="field"><label>Qty</label><input type="number" id="p-qty" value="1" min="1"></div>
     </div>
-    <div class="field">
-      <label>Price (optional — for insurance records)</label>
-      <input type="number" id="p-price" step="0.01" placeholder="$0.00">
-    </div>
+    <div class="field"><label>Price — optional, for insurance records</label>
+      <input type="number" id="p-price" step="0.01" placeholder="$0.00"></div>
   </div>
 
   <div id="status" class="idle">Ready — scan a barcode to begin</div>
@@ -340,15 +251,11 @@ select{
     <button class="btn btn-remove" onclick="doScan('REMOVE')">－ Remove</button>
   </div>
 
-  <div class="sec-label" style="margin-top:10px">MANUAL ENTRY</div>
+  <div class="sec-label" style="margin-top:6px">MANUAL ENTRY</div>
   <div class="card">
-    <div class="field">
-      <label>Item name</label>
-      <input type="text" id="m-name" placeholder="e.g. Power drill, Blender…">
-    </div>
+    <div class="field"><label>Item name</label><input type="text" id="m-name" placeholder="e.g. Power drill, Blender…"></div>
     <div class="row-2">
-      <div class="field">
-        <label>Category</label>
+      <div class="field"><label>Category</label>
         <select id="m-cat">
           <option value="Food">🥫 Food</option>
           <option value="Electronics">📱 Electronics</option>
@@ -356,15 +263,9 @@ select{
           <option value="Other">📦 Other</option>
         </select>
       </div>
-      <div class="field">
-        <label>Quantity</label>
-        <input type="number" id="m-qty" value="1" min="1">
-      </div>
+      <div class="field"><label>Qty</label><input type="number" id="m-qty" value="1" min="1"></div>
     </div>
-    <div class="field">
-      <label>Price (optional)</label>
-      <input type="number" id="m-price" step="0.01" placeholder="$0.00">
-    </div>
+    <div class="field"><label>Price — optional</label><input type="number" id="m-price" step="0.01" placeholder="$0.00"></div>
   </div>
   <div class="btn-row">
     <button class="btn btn-add"    onclick="doManual('ADD')">＋ Add Item</button>
@@ -372,149 +273,131 @@ select{
   </div>
 </div>
 
-<!-- ════════════════ INVENTORY SCREEN ════════════════ -->
+<!-- ════════ INVENTORY SCREEN ════════ -->
 <div id="screen-inventory" class="screen hidden">
   <div class="page-hdr">
     <h1>All Items</h1>
     <p id="inv-count-label">Loading…</p>
   </div>
   <div class="filter-scroll" id="filter-tabs">
-    <div class="filter-tab active" data-cat="All" onclick="filterInventory('All')">All</div>
-    <div class="filter-tab" data-cat="Food" onclick="filterInventory('Food')">🥫 Food</div>
-    <div class="filter-tab" data-cat="Electronics" onclick="filterInventory('Electronics')">📱 Electronics</div>
-    <div class="filter-tab" data-cat="Appliances" onclick="filterInventory('Appliances')">🏠 Appliances</div>
-    <div class="filter-tab" data-cat="Other" onclick="filterInventory('Other')">📦 Other</div>
+    <div class="filter-tab active" data-cat="All"         onclick="filterInventory('All')">All</div>
+    <div class="filter-tab" data-cat="Food"               onclick="filterInventory('Food')">🥫 Food</div>
+    <div class="filter-tab" data-cat="Electronics"        onclick="filterInventory('Electronics')">📱 Electronics</div>
+    <div class="filter-tab" data-cat="Appliances"         onclick="filterInventory('Appliances')">🏠 Appliances</div>
+    <div class="filter-tab" data-cat="Other"              onclick="filterInventory('Other')">📦 Other</div>
   </div>
-  <div class="card" style="padding:0;overflow:hidden" id="inv-list-card">
+  <div class="card" style="padding:0;overflow:hidden">
     <div id="inv-list"></div>
   </div>
 </div>
 
-<!-- ════════════════ SHOPPING SCREEN ════════════════ -->
+<!-- ════════ SHOPPING SCREEN ════════ -->
 <div id="screen-shopping" class="screen hidden">
   <div class="page-hdr">
     <h1>Shopping List</h1>
-    <p>Items at zero stock — auto-added when you run out</p>
+    <p>Auto-added when stock hits zero</p>
   </div>
   <div class="btn-row">
     <button class="btn btn-ghost" onclick="clearChecked()" style="font-size:13px">Remove checked</button>
-    <button class="btn btn-ghost" onclick="exportShopping()" style="font-size:13px">📋 Copy list</button>
+    <button class="btn btn-ghost" onclick="shareShopList()" style="font-size:13px">📋 Share list</button>
   </div>
-  <div class="card" style="padding:0;overflow:hidden">
-    <div id="shop-list"></div>
-  </div>
-  <div class="sec-label">ADD TO LIST</div>
+  <div class="card" style="padding:0;overflow:hidden"><div id="shop-list"></div></div>
+  <div class="sec-label">ADD MANUALLY</div>
   <div class="card">
-    <div class="field" style="display:flex;gap:10px;margin:0;align-items:flex-end">
-      <div style="flex:1">
-        <label>Item name</label>
-        <input type="text" id="shop-add-input" placeholder="Add item manually…">
-      </div>
-      <button class="btn btn-primary" onclick="addToShopManual()" style="width:auto;padding:11px 16px;margin-bottom:0">Add</button>
+    <div style="display:flex;gap:10px;align-items:flex-end">
+      <div class="field" style="flex:1;margin:0"><label>Item</label>
+        <input type="text" id="shop-input" placeholder="Add item…"></div>
+      <button class="btn btn-primary" onclick="addShopManual()" style="width:auto;padding:11px 16px">Add</button>
     </div>
   </div>
 </div>
 
-<!-- ════════════════ EXPORT / SETTINGS SCREEN ════════════════ -->
+<!-- ════════ EXPORT & SETTINGS SCREEN ════════ -->
 <div id="screen-settings" class="screen hidden">
   <div class="page-hdr">
-    <h1>Export & Settings</h1>
-    <p>Download your data or configure the app</p>
+    <h1>Export & Sync</h1>
+    <p>Share with spouse, download data</p>
   </div>
 
+  <!-- SYNC SETUP -->
+  <div id="sync-panel">
+    <h3>🔄 <span id="sync-panel-title">Set up household sync</span></h3>
+    <p id="sync-panel-desc">Connect to Firebase so you and your spouse see the same inventory in real time — free, no subscription.</p>
+    <ul class="sync-steps" id="sync-steps">
+      <li data-n="1">Go to <a href="https://console.firebase.google.com" target="_blank">console.firebase.google.com</a> and sign in with your Google account (not the Advanced Protection one — use any Google account).</li>
+      <li data-n="2">Click <strong>Create a project</strong>, name it anything (e.g. "home-inventory"), disable Google Analytics, click <strong>Create project</strong>.</li>
+      <li data-n="3">In the left sidebar click <strong>Build → Firestore Database</strong> → <strong>Create database</strong> → choose <strong>Start in test mode</strong> → pick any location → <strong>Enable</strong>.</li>
+      <li data-n="4">In the left sidebar click the <strong>gear icon ⚙ → Project settings</strong>. Scroll down to "Your apps", click the <strong>Web icon &lt;/&gt;</strong>, name it "inventory", click <strong>Register app</strong>. You'll see a <code>firebaseConfig</code> block — copy the values below.</li>
+    </ul>
+    <div class="field"><label>API Key</label><input type="text" id="fb-apikey" placeholder="AIzaSy…"></div>
+    <div class="field"><label>Project ID</label><input type="text" id="fb-projectid" placeholder="home-inventory-xxxxx"></div>
+    <div id="status-sync" style="font-size:13px;min-height:20px;margin-bottom:10px"></div>
+    <button class="btn btn-primary" id="btn-fb-connect" onclick="connectFirebase()">Connect &amp; Start Syncing</button>
+    <p class="hint" style="margin-top:10px">Your spouse opens the same URL on their phone, goes to this screen, and enters the same API Key and Project ID. That's it — both phones sync instantly.</p>
+  </div>
+
+  <!-- EXPORT -->
   <div class="sec-label">EXPORT DATA</div>
   <div class="card" style="padding:0;overflow:hidden">
     <div class="setting-row">
-      <div>
-        <div class="setting-label">Inventory CSV</div>
-        <div class="setting-desc">All items — open in Google Sheets, Excel, Numbers</div>
-      </div>
+      <div><div class="setting-label">Inventory CSV</div>
+           <div class="setting-desc">Open in Google Sheets or Excel</div></div>
       <button class="setting-action" onclick="exportCSV('inventory')">Download</button>
     </div>
     <div class="setting-row">
-      <div>
-        <div class="setting-label">Shopping List CSV</div>
-        <div class="setting-desc">Current shopping list</div>
-      </div>
+      <div><div class="setting-label">Shopping List CSV</div>
+           <div class="setting-desc">Current shopping list</div></div>
       <button class="setting-action" onclick="exportCSV('shopping')">Download</button>
     </div>
     <div class="setting-row">
-      <div>
-        <div class="setting-label">Full Backup JSON</div>
-        <div class="setting-desc">All data — use to restore or migrate</div>
-      </div>
+      <div><div class="setting-label">Full JSON Backup</div>
+           <div class="setting-desc">Restore or migrate to a new phone</div></div>
       <button class="setting-action" onclick="exportJSON()">Download</button>
     </div>
     <div class="setting-row">
-      <div>
-        <div class="setting-label">Restore from Backup</div>
-        <div class="setting-desc">Import a previously exported JSON backup</div>
-      </div>
+      <div><div class="setting-label">Restore Backup</div>
+           <div class="setting-desc">Import a JSON backup file</div></div>
       <button class="setting-action" onclick="document.getElementById('restore-file').click()">Import</button>
       <input type="file" id="restore-file" accept=".json" style="display:none" onchange="importJSON(this)">
     </div>
   </div>
 
+  <!-- STATS -->
   <div class="sec-label">STATISTICS</div>
   <div class="card" style="padding:0;overflow:hidden" id="stats-card"></div>
 
-  <div class="sec-label">ABOUT</div>
-  <div class="card" style="padding:0;overflow:hidden">
-    <div class="setting-row">
-      <div>
-        <div class="setting-label">App version</div>
-        <div class="setting-desc">Home Inventory PWA · 2025</div>
-      </div>
-    </div>
-    <div class="setting-row">
-      <div>
-        <div class="setting-label">Storage</div>
-        <div class="setting-desc">All data stored on this device only</div>
-      </div>
-      <div id="storage-size" style="font-size:13px;color:var(--ink-2);font-family:var(--mono)"></div>
-    </div>
-  </div>
-
+  <!-- DANGER -->
   <div class="sec-label">DANGER ZONE</div>
   <div class="card" style="padding:0;overflow:hidden">
     <div class="setting-row">
-      <div>
-        <div class="setting-label">Clear all data</div>
-        <div class="setting-desc">Permanently delete all inventory and shopping list</div>
-      </div>
-      <button class="setting-action danger" onclick="clearAllData()">Clear</button>
+      <div><div class="setting-label">Disconnect sync</div>
+           <div class="setting-desc">Return to local-only mode (data stays on device)</div></div>
+      <button class="setting-action" id="btn-disconnect" onclick="disconnectFirebase()">Disconnect</button>
+    </div>
+    <div class="setting-row">
+      <div><div class="setting-label">Clear all local data</div>
+           <div class="setting-desc">Removes local copy (Firebase data unaffected)</div></div>
+      <button class="setting-action danger" onclick="clearLocal()">Clear</button>
     </div>
   </div>
 </div>
 
-<!-- ════════════════ BOTTOM NAV ════════════════ -->
+<!-- ════════ BOTTOM NAV ════════ -->
 <nav id="nav">
-  <button class="nav-btn active" id="nav-scan"      onclick="gotoScreen('scan')">
-    <span class="icon">📷</span>Scan
-  </button>
-  <button class="nav-btn" id="nav-inventory" onclick="gotoScreen('inventory')">
-    <span class="icon">📋</span>Inventory
-  </button>
-  <button class="nav-btn" id="nav-shopping"  onclick="gotoScreen('shopping')">
-    <span class="icon">🛒</span>Shopping
-  </button>
-  <button class="nav-btn" id="nav-settings"  onclick="gotoScreen('settings')">
-    <span class="icon">⚙️</span>Export
-  </button>
+  <button class="nav-btn active" id="nav-scan"      onclick="gotoScreen('scan')"><span class="ni">📷</span>Scan</button>
+  <button class="nav-btn" id="nav-inventory"        onclick="gotoScreen('inventory')"><span class="ni">📋</span>Inventory</button>
+  <button class="nav-btn" id="nav-shopping"         onclick="gotoScreen('shopping')"><span class="ni">🛒</span>Shopping</button>
+  <button class="nav-btn" id="nav-settings"         onclick="gotoScreen('settings')"><span class="ni">⚙️</span>Export</button>
 </nav>
 
-<!-- ════════════════ DETAIL MODAL ════════════════ -->
+<!-- ════════ ITEM DETAIL MODAL ════════ -->
 <div id="modal-bg" onclick="closeModal()">
   <div id="modal" onclick="event.stopPropagation()">
-    <div class="modal-title" id="modal-name"></div>
+    <div class="modal-title" id="modal-title"></div>
     <div class="modal-barcode" id="modal-barcode"></div>
     <div class="row-2" style="margin-bottom:12px">
-      <div class="field">
-        <label>Name</label>
-        <input type="text" id="modal-name-edit">
-      </div>
-      <div class="field">
-        <label>Category</label>
+      <div class="field"><label>Name</label><input type="text" id="modal-name-edit"></div>
+      <div class="field"><label>Category</label>
         <select id="modal-cat-edit">
           <option value="Food">🥫 Food</option>
           <option value="Electronics">📱 Electronics</option>
@@ -524,92 +407,283 @@ select{
       </div>
     </div>
     <div class="row-2" style="margin-bottom:14px">
-      <div class="field">
-        <label>Quantity</label>
-        <input type="number" id="modal-qty-edit" min="0">
-      </div>
-      <div class="field">
-        <label>Price</label>
-        <input type="number" id="modal-price-edit" step="0.01">
-      </div>
+      <div class="field"><label>Quantity</label><input type="number" id="modal-qty-edit" min="0"></div>
+      <div class="field"><label>Price</label><input type="number" id="modal-price-edit" step="0.01"></div>
     </div>
     <div style="display:flex;gap:10px">
-      <button class="btn btn-primary" onclick="saveModal()" style="flex:2">Save Changes</button>
+      <button class="btn btn-primary" onclick="saveModal()" style="flex:2">Save</button>
       <button class="btn btn-ghost"   onclick="closeModal()" style="flex:1">Cancel</button>
     </div>
     <div style="margin-top:10px">
       <button class="btn" style="background:var(--red-dim);color:var(--red);border:1px solid var(--red)"
-        onclick="deleteItem()">🗑 Delete item from inventory</button>
+        onclick="deleteItem()">🗑 Delete this item</button>
     </div>
   </div>
 </div>
 
-</div><!-- #app -->
+</div>
 
-<script>
+<!-- Firebase SDK (loaded dynamically only if configured) -->
+<script type="module">
 // ════════════════════════════════════════════════════════════
-// DATA LAYER — all data in localStorage, fully offline
+// DATA LAYER
+// localStorage = local cache + offline fallback
+// Firestore    = shared sync (optional, enabled via settings)
 // ════════════════════════════════════════════════════════════
-const DB = {
-  get inventory() { return JSON.parse(localStorage.getItem('inv_data') || '[]'); },
-  set inventory(v) { localStorage.setItem('inv_data', JSON.stringify(v)); },
-  get shopping()  { return JSON.parse(localStorage.getItem('inv_shop') || '[]'); },
-  set shopping(v) { localStorage.setItem('inv_shop',  JSON.stringify(v)); },
-  get cache()     { return JSON.parse(localStorage.getItem('inv_cache') || '{}'); },
-  set cache(v)    { localStorage.setItem('inv_cache', JSON.stringify(v)); }
+
+// ── Local Storage ────────────────────────────────────────────
+const LS = {
+  get inv()   { return JSON.parse(localStorage.getItem('inv_data')  || '[]') },
+  set inv(v)  { localStorage.setItem('inv_data',  JSON.stringify(v)) },
+  get shop()  { return JSON.parse(localStorage.getItem('inv_shop')  || '[]') },
+  set shop(v) { localStorage.setItem('inv_shop',  JSON.stringify(v)) },
+  get cache() { return JSON.parse(localStorage.getItem('inv_cache') || '{}') },
+  set cache(v){ localStorage.setItem('inv_cache', JSON.stringify(v)) },
+  get fbcfg() { return JSON.parse(localStorage.getItem('inv_fbcfg') || 'null') },
+  set fbcfg(v){ localStorage.setItem('inv_fbcfg', JSON.stringify(v)) }
 };
 
-// ── Find record by barcode ───────────────────────────────────
-function findItem(barcode) {
-  return DB.inventory.find(r => r.barcode === barcode) || null;
+// ── Firestore handles ────────────────────────────────────────
+let db           = null;   // Firestore instance
+let fbInited     = false;
+let unsubInv     = null;   // realtime listener unsubscribe fn
+let unsubShop    = null;
+
+// ── Firebase dynamic import ──────────────────────────────────
+async function loadFirebase(apiKey, projectId) {
+  const { initializeApp, getApps } = await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js');
+  const { getFirestore, collection, doc, setDoc, deleteDoc,
+          onSnapshot, getDocs, writeBatch }
+        = await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js');
+
+  const fbConfig = {
+    apiKey,
+    authDomain:  `${projectId}.firebaseapp.com`,
+    projectId,
+  };
+
+  const existingApps = getApps();
+  const app = existingApps.length ? existingApps[0] : initializeApp(fbConfig);
+  db = getFirestore(app);
+
+  // Expose Firestore helpers globally so non-module code can use them
+  window._fb = { collection, doc, setDoc, deleteDoc, onSnapshot, getDocs, writeBatch, db };
+  fbInited = true;
 }
 
-// ── Upsert an inventory record ───────────────────────────────
-function upsertItem(barcode, name, category, delta, price) {
-  let inv  = DB.inventory;
+// ── Connect to Firebase ──────────────────────────────────────
+window.connectFirebase = async function() {
+  const apiKey    = document.getElementById('fb-apikey').value.trim();
+  const projectId = document.getElementById('fb-projectid').value.trim();
+  const msgEl     = document.getElementById('status-sync');
+  const btn       = document.getElementById('btn-fb-connect');
+
+  if (!apiKey || !projectId) { syncMsg('Enter both fields', 'err'); return; }
+
+  btn.textContent = 'Connecting…'; btn.disabled = true;
+  syncMsg('<span class="spin">⟳</span> Loading Firebase…', '');
+
+  try {
+    await loadFirebase(apiKey, projectId);
+
+    // Test write to confirm credentials work
+    const { doc, setDoc, db } = window._fb;
+    await setDoc(doc(db, '_test', 'ping'), { ts: Date.now() });
+
+    // Save config
+    LS.fbcfg = { apiKey, projectId };
+
+    // Push all local data to Firestore
+    await pushLocalToFirestore();
+
+    // Start real-time listeners
+    startListeners();
+
+    setSyncDot('live');
+    syncMsg('Connected! Both phones will sync in real time ✓', 'ok');
+    document.getElementById('sync-panel-title').textContent  = 'Sync is active';
+    document.getElementById('sync-panel-desc').textContent   = 'Your inventory is shared with anyone using the same Project ID.';
+    document.getElementById('sync-steps').style.display      = 'none';
+    btn.textContent = 'Reconnect'; btn.disabled = false;
+    updateSyncLabel('live');
+  } catch(e) {
+    btn.textContent = 'Connect & Start Syncing'; btn.disabled = false;
+    const msg = e.message.includes('400') || e.message.includes('API key')
+      ? 'Invalid API key — check you copied it correctly'
+      : e.message.includes('not-found') || e.message.includes('404')
+      ? 'Project not found — check Project ID'
+      : 'Error: ' + e.message;
+    syncMsg(msg, 'err');
+    setSyncDot('error');
+  }
+};
+
+window.disconnectFirebase = function() {
+  if (!confirm('Disconnect sync? Your local data stays, Firebase data is untouched.')) return;
+  if (unsubInv)  unsubInv();
+  if (unsubShop) unsubShop();
+  LS.fbcfg = null;
+  db = null; fbInited = false;
+  setSyncDot('');
+  updateSyncLabel('off');
+  syncMsg('Disconnected — running in local-only mode', 'warn');
+};
+
+// ── Push local → Firestore (one-time on first connect) ───────
+async function pushLocalToFirestore() {
+  const { collection, doc, setDoc, writeBatch, db } = window._fb;
+  const batch = writeBatch(db);
+  LS.inv.forEach(item => {
+    batch.set(doc(db, 'inventory', item.barcode), item);
+  });
+  LS.shop.forEach((item, i) => {
+    batch.set(doc(db, 'shopping', slugify(item.name) + '_' + i), item);
+  });
+  await batch.commit();
+}
+
+// ── Real-time Firestore listeners ─────────────────────────────
+function startListeners() {
+  const { collection, onSnapshot, db } = window._fb;
+
+  if (unsubInv)  unsubInv();
+  if (unsubShop) unsubShop();
+
+  unsubInv = onSnapshot(collection(db, 'inventory'), snap => {
+    const items = [];
+    snap.forEach(d => items.push(d.data()));
+    LS.inv = items;
+    if (document.getElementById('screen-inventory').classList.contains('hidden') === false)
+      renderInventory();
+    setSyncDot('live');
+  }, () => setSyncDot('error'));
+
+  unsubShop = onSnapshot(collection(db, 'shopping'), snap => {
+    const items = [];
+    snap.forEach(d => items.push(d.data()));
+    LS.shop = items;
+    if (document.getElementById('screen-shopping').classList.contains('hidden') === false)
+      renderShopping();
+  }, () => {});
+}
+
+// ── Write a single inventory item ────────────────────────────
+async function fbSetInvItem(item) {
+  if (!fbInited || !window._fb) return;
+  const { doc, setDoc, db } = window._fb;
+  await setDoc(doc(db, 'inventory', item.barcode), item);
+}
+
+async function fbDeleteInvItem(barcode) {
+  if (!fbInited || !window._fb) return;
+  const { doc, deleteDoc, db } = window._fb;
+  await deleteDoc(doc(db, 'inventory', barcode));
+}
+
+async function fbSetShopItem(key, item) {
+  if (!fbInited || !window._fb) return;
+  const { doc, setDoc, db } = window._fb;
+  await setDoc(doc(db, 'shopping', key), item);
+}
+
+async function fbDeleteShopItem(key) {
+  if (!fbInited || !window._fb) return;
+  const { doc, deleteDoc, db } = window._fb;
+  await deleteDoc(doc(db, 'shopping', key));
+}
+
+async function fbSetShopAll(items) {
+  if (!fbInited || !window._fb) return;
+  const { collection, doc, setDoc, deleteDoc, writeBatch, getDocs, db } = window._fb;
+  // Delete all, then rewrite — simplest for shopping list operations
+  const snap  = await getDocs(collection(db, 'shopping'));
+  const batch = writeBatch(db);
+  snap.forEach(d => batch.delete(d.ref));
+  items.forEach((item, i) => {
+    batch.set(doc(db, 'shopping', slugify(item.name) + '_' + i), item);
+  });
+  await batch.commit();
+}
+
+// ════════════════════════════════════════════════════════════
+// LOCAL DATA HELPERS
+// ════════════════════════════════════════════════════════════
+function findItem(barcode) {
+  return LS.inv.find(r => r.barcode === barcode) || null;
+}
+
+async function upsertItem(barcode, name, category, delta, price) {
+  let inv  = LS.inv;
   const idx = inv.findIndex(r => r.barcode === barcode);
   const now = new Date().toISOString();
 
   if (idx >= 0) {
     inv[idx].quantity = Math.max(0, (inv[idx].quantity || 0) + delta);
-    inv[idx].name     = name;
-    inv[idx].category = category;
-    inv[idx].updated  = now;
+    inv[idx].name = name; inv[idx].category = category; inv[idx].updated = now;
     if (price !== null && !isNaN(price)) inv[idx].price = price;
-    if (inv[idx].quantity === 0) addShopItem(name);
+    if (inv[idx].quantity === 0) await addShopItem(name);
+    LS.inv = inv;
+    await fbSetInvItem(inv[idx]);
+    return inv[idx];
   } else if (delta > 0) {
-    inv.push({
-      barcode, name, category,
-      quantity: delta,
+    const rec = { barcode, name, category, quantity: delta,
       price: (price !== null && !isNaN(price)) ? price : null,
-      added: now, updated: now
-    });
+      added: now, updated: now };
+    inv.push(rec);
+    LS.inv = inv;
+    await fbSetInvItem(rec);
+    return rec;
   }
-  DB.inventory = inv;
+  return null;
 }
 
-// ── Shopping list helpers ────────────────────────────────────
-function addShopItem(name) {
-  let shop = DB.shopping;
-  if (!shop.find(s => s.name === name)) {
-    shop.push({ name, checked: false, added: new Date().toISOString() });
-    DB.shopping = shop;
-  }
+async function addShopItem(name) {
+  let shop = LS.shop;
+  if (shop.find(s => s.name === name)) return;
+  const item = { name, checked: false, added: new Date().toISOString() };
+  shop.push(item);
+  LS.shop = shop;
+  await fbSetShopItem(slugify(name) + '_' + Date.now(), item);
 }
 
-// ── Product cache ────────────────────────────────────────────
 function cacheProduct(barcode, name, category) {
-  const c = DB.cache;
-  c[barcode] = { name, category };
-  DB.cache = c;
+  const c = LS.cache; c[barcode] = { name, category }; LS.cache = c;
 }
+
+// ════════════════════════════════════════════════════════════
+// AUTO-INIT: reconnect if config saved
+// ════════════════════════════════════════════════════════════
+window.addEventListener('DOMContentLoaded', async () => {
+  initScanner();
+  if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});
+
+  const saved = LS.fbcfg;
+  if (saved && saved.apiKey && saved.projectId) {
+    document.getElementById('fb-apikey').value    = saved.apiKey;
+    document.getElementById('fb-projectid').value = saved.projectId;
+    updateSyncLabel('connecting');
+    setSyncDot('pending');
+    try {
+      await loadFirebase(saved.apiKey, saved.projectId);
+      startListeners();
+      updateSyncLabel('live');
+      setSyncDot('live');
+      document.getElementById('sync-panel-title').textContent = 'Sync is active';
+      document.getElementById('sync-panel-desc').textContent  = 'Connected. Both phones sync in real time.';
+      document.getElementById('sync-steps').style.display     = 'none';
+    } catch(e) {
+      updateSyncLabel('error');
+      setSyncDot('error');
+    }
+  }
+});
 
 // ════════════════════════════════════════════════════════════
 // NAVIGATION
 // ════════════════════════════════════════════════════════════
 const SCREENS = ['scan','inventory','shopping','settings'];
 
-function gotoScreen(name) {
+window.gotoScreen = function(name) {
   SCREENS.forEach(s => {
     document.getElementById('screen-' + s).classList.toggle('hidden', s !== name);
     document.getElementById('nav-' + s).classList.toggle('active', s === name);
@@ -617,7 +691,7 @@ function gotoScreen(name) {
   if (name === 'inventory') renderInventory();
   if (name === 'shopping')  renderShopping();
   if (name === 'settings')  renderSettings();
-}
+};
 
 // ════════════════════════════════════════════════════════════
 // SCANNER
@@ -630,7 +704,7 @@ function initScanner() {
     .then(cams => {
       if (!cams || !cams.length) { setStatus('No camera found', 'err'); return; }
       const cam = cams.find(c => /back|rear|environment/i.test(c.label)) || cams[cams.length - 1];
-      return qr.start(cam.id, { fps: 12, qrbox: { width: 240, height: 140 } }, onScan, () => {});
+      qr.start(cam.id, { fps: 12, qrbox: { width: 240, height: 140 } }, onScan, () => {});
     })
     .catch(() => setStatus('Camera permission denied', 'err'));
 }
@@ -649,22 +723,19 @@ function onScan(code) {
 // ════════════════════════════════════════════════════════════
 async function lookupProduct(barcode) {
   lookupBusy = true;
-  setStatus('<span class="spin">⟳</span> Looking up barcode…', 'loading');
+  setStatus('<span class="spin">⟳</span> Looking up…', 'loading');
 
-  // Existing inventory item — show current quantity
+  const cached   = LS.cache[barcode];
   const existing = findItem(barcode);
 
-  // Local cache
-  const cached = DB.cache[barcode];
   if (cached) {
     lookupBusy = false;
     showPreview(barcode, cached.name, cached.category,
       existing ? existing.quantity : 0, 'Your database');
-    setStatus('Found in your inventory database', 'info');
+    setStatus('Found in your database', 'info');
     return;
   }
 
-  // Open Food Facts
   try {
     const res  = await fetch(`https://world.openfoodfacts.org/api/v0/product/${barcode}.json`);
     const json = await res.json();
@@ -678,7 +749,6 @@ async function lookupProduct(barcode) {
     }
   } catch(e) {}
 
-  // UPC Item DB
   try {
     const res  = await fetch(`https://api.upcitemdb.com/prod/trial/lookup?upc=${barcode}`);
     const json = await res.json();
@@ -696,10 +766,9 @@ async function lookupProduct(barcode) {
     }
   } catch(e) {}
 
-  // Unknown
   lookupBusy = false;
   showPreview(barcode, '', 'Other', existing ? existing.quantity : 0, null);
-  setStatus('Unknown barcode — enter the name below', 'warn');
+  setStatus('Unknown barcode — enter name below', 'warn');
 }
 
 function inferCat(s) {
@@ -717,18 +786,15 @@ function showPreview(barcode, name, category, qty, source) {
   document.getElementById('preview-src').textContent  = source ? 'SOURCE: ' + source.toUpperCase() : 'NEW ITEM';
   document.getElementById('preview-name').textContent = name || 'Unknown item';
   document.getElementById('preview-name').className   = name ? '' : 'unknown';
-  document.getElementById('p-name').value    = name || '';
-  document.getElementById('p-qty').value     = '1';
-  document.getElementById('p-price').value   = '';
+  document.getElementById('p-name').value  = name || '';
+  document.getElementById('p-qty').value   = '1';
+  document.getElementById('p-price').value = '';
   const catEl = document.getElementById('p-cat');
   if ([...catEl.options].find(o => o.value === category)) catEl.value = category;
-
-  const qc = qty > 3 ? 'c-green' : qty > 0 ? 'c-amber' : 'c-red';
+  const qc = qty > 3 ? 'cg' : qty > 0 ? 'ca' : 'cr';
   document.getElementById('preview-chips').innerHTML =
-    `<span class="chip ${qc}">In stock: ${qty}</span>` +
-    `<span class="chip">${category}</span>` +
-    (source && source !== 'Your database' ? `<span class="chip c-blue">${source}</span>` : '');
-
+    `<span class="chip ${qc}">In stock: ${qty}</span><span class="chip">${category}</span>` +
+    (source && source !== 'Your database' ? `<span class="chip cb">${source}</span>` : '');
   document.getElementById('item-preview').classList.add('show');
   document.getElementById('scan-btns').style.display = 'flex';
 }
@@ -736,43 +802,35 @@ function showPreview(barcode, name, category, qty, source) {
 // ════════════════════════════════════════════════════════════
 // ACTIONS
 // ════════════════════════════════════════════════════════════
-function doScan(action) {
+window.doScan = async function(action) {
   if (!currentBarcode) { setStatus('Scan a barcode first', 'warn'); return; }
   const name = document.getElementById('p-name').value.trim();
   if (!name) { setStatus('Enter an item name', 'warn'); document.getElementById('p-name').focus(); return; }
   const cat   = document.getElementById('p-cat').value;
   const qty   = parseInt(document.getElementById('p-qty').value) || 1;
   const price = parseFloat(document.getElementById('p-price').value) || null;
-  const delta = action === 'ADD' ? qty : -qty;
-
+  setStatus('<span class="spin">⟳</span> Saving…', 'loading');
   cacheProduct(currentBarcode, name, cat);
-  upsertItem(currentBarcode, name, cat, delta, price);
-
-  const verb = action === 'ADD' ? 'Added' : 'Removed';
-  const rec  = findItem(currentBarcode);
-  setStatus(`${verb} ${qty}× ${name} — now ${rec ? rec.quantity : 0} in stock ✓`, 'ok');
+  const rec = await upsertItem(currentBarcode, name, cat, action === 'ADD' ? qty : -qty, price);
+  setStatus(`${action === 'ADD' ? 'Added' : 'Removed'} ${qty}× ${name} — ${rec ? rec.quantity : 0} in stock ✓`, 'ok');
   clearScanState();
-}
+};
 
-function doManual(action) {
+window.doManual = async function(action) {
   const name = document.getElementById('m-name').value.trim();
   if (!name) { setStatus('Enter an item name', 'warn'); document.getElementById('m-name').focus(); return; }
   const cat     = document.getElementById('m-cat').value;
   const qty     = parseInt(document.getElementById('m-qty').value) || 1;
   const price   = parseFloat(document.getElementById('m-price').value) || null;
-  const barcode = 'MANUAL-' + name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
-  const delta   = action === 'ADD' ? qty : -qty;
-
+  const barcode = 'MANUAL-' + slugify(name);
+  setStatus('<span class="spin">⟳</span> Saving…', 'loading');
   cacheProduct(barcode, name, cat);
-  upsertItem(barcode, name, cat, delta, price);
-
-  const verb = action === 'ADD' ? 'Added' : 'Removed';
-  const rec  = findItem(barcode);
-  setStatus(`${verb} ${qty}× ${name} — now ${rec ? rec.quantity : 0} in stock ✓`, 'ok');
-  document.getElementById('m-name').value  = '';
-  document.getElementById('m-qty').value   = '1';
+  const rec = await upsertItem(barcode, name, cat, action === 'ADD' ? qty : -qty, price);
+  setStatus(`${action === 'ADD' ? 'Added' : 'Removed'} ${qty}× ${name} — ${rec ? rec.quantity : 0} in stock ✓`, 'ok');
+  document.getElementById('m-name').value = '';
+  document.getElementById('m-qty').value  = '1';
   document.getElementById('m-price').value = '';
-}
+};
 
 function clearScanState() {
   currentBarcode = null; lastCode = null; lastTime = 0;
@@ -785,35 +843,31 @@ function clearScanState() {
 // INVENTORY SCREEN
 // ════════════════════════════════════════════════════════════
 let activeFilter = 'All';
+const CAT_ICON = { Food:'🥫', Electronics:'📱', Appliances:'🏠', Other:'📦' };
 
-function filterInventory(cat) {
+window.filterInventory = function(cat) {
   activeFilter = cat;
   document.querySelectorAll('.filter-tab').forEach(t =>
     t.classList.toggle('active', t.dataset.cat === cat));
   renderInventory();
-}
-
-const CAT_ICON = { Food:'🥫', Electronics:'📱', Appliances:'🏠', Other:'📦' };
+};
 
 function renderInventory() {
-  const all = DB.inventory.slice().sort((a, b) => a.name.localeCompare(b.name));
+  const all   = LS.inv.slice().sort((a,b) => a.name.localeCompare(b.name));
   const items = activeFilter === 'All' ? all : all.filter(r => r.category === activeFilter);
-  const total = all.reduce((s, r) => s + r.quantity, 0);
+  const total = all.reduce((s,r) => s + r.quantity, 0);
   document.getElementById('inv-count-label').textContent =
     `${all.length} items · ${total} total units`;
-
   if (!items.length) {
     document.getElementById('inv-list').innerHTML =
-      `<div class="empty"><div class="icon">${activeFilter === 'All' ? '📦' : CAT_ICON[activeFilter]}</div><p>No ${activeFilter === 'All' ? '' : activeFilter.toLowerCase() + ' '}items yet.<br>Start scanning to add inventory.</p></div>`;
+      `<div class="empty"><div class="icon">${CAT_ICON[activeFilter]||'📦'}</div><p>No items yet.<br>Start scanning to build your inventory.</p></div>`;
     return;
   }
-
   document.getElementById('inv-list').innerHTML = items.map(r => {
-    const qc   = r.quantity > 3 ? 'ok' : r.quantity > 0 ? 'low' : 'zero';
-    const icon = CAT_ICON[r.category] || '📦';
+    const qc = r.quantity > 3 ? 'ok' : r.quantity > 0 ? 'low' : 'zero';
     const price = r.price ? ` · $${Number(r.price).toFixed(2)}` : '';
     return `<div class="inv-item" onclick="openModal('${r.barcode}')">
-      <div class="inv-icon">${icon}</div>
+      <div class="inv-icon">${CAT_ICON[r.category]||'📦'}</div>
       <div class="inv-info">
         <div class="inv-name">${r.name}</div>
         <div class="inv-meta">${r.category}${price}</div>
@@ -824,15 +878,14 @@ function renderInventory() {
 }
 
 // ════════════════════════════════════════════════════════════
-// DETAIL MODAL
+// MODAL
 // ════════════════════════════════════════════════════════════
 let modalBarcode = null;
 
-function openModal(barcode) {
-  const rec = findItem(barcode);
-  if (!rec) return;
+window.openModal = function(barcode) {
+  const rec = findItem(barcode); if (!rec) return;
   modalBarcode = barcode;
-  document.getElementById('modal-name').textContent     = rec.name;
+  document.getElementById('modal-title').textContent    = rec.name;
   document.getElementById('modal-barcode').textContent  = barcode;
   document.getElementById('modal-name-edit').value      = rec.name;
   document.getElementById('modal-qty-edit').value       = rec.quantity;
@@ -840,221 +893,201 @@ function openModal(barcode) {
   const sel = document.getElementById('modal-cat-edit');
   if ([...sel.options].find(o => o.value === rec.category)) sel.value = rec.category;
   document.getElementById('modal-bg').classList.add('show');
-}
+};
 
-function closeModal() {
+window.closeModal = function() {
   document.getElementById('modal-bg').classList.remove('show');
   modalBarcode = null;
-}
+};
 
-function saveModal() {
+window.saveModal = async function() {
   if (!modalBarcode) return;
-  let inv = DB.inventory;
-  const idx = inv.findIndex(r => r.barcode === modalBarcode);
-  if (idx < 0) return;
-  const newName = document.getElementById('modal-name-edit').value.trim();
-  const newQty  = parseInt(document.getElementById('modal-qty-edit').value) || 0;
-  const newCat  = document.getElementById('modal-cat-edit').value;
-  const newPrice= parseFloat(document.getElementById('modal-price-edit').value) || null;
-  inv[idx].name     = newName;
-  inv[idx].quantity = Math.max(0, newQty);
-  inv[idx].category = newCat;
-  inv[idx].price    = newPrice;
-  inv[idx].updated  = new Date().toISOString();
-  DB.inventory = inv;
+  let inv = LS.inv;
+  const idx = inv.findIndex(r => r.barcode === modalBarcode); if (idx < 0) return;
+  const newName  = document.getElementById('modal-name-edit').value.trim();
+  const newQty   = Math.max(0, parseInt(document.getElementById('modal-qty-edit').value) || 0);
+  const newCat   = document.getElementById('modal-cat-edit').value;
+  const newPrice = parseFloat(document.getElementById('modal-price-edit').value) || null;
+  inv[idx] = { ...inv[idx], name: newName, quantity: newQty, category: newCat,
+    price: newPrice, updated: new Date().toISOString() };
+  LS.inv = inv;
+  await fbSetInvItem(inv[idx]);
   cacheProduct(modalBarcode, newName, newCat);
-  if (newQty === 0) addShopItem(newName);
-  closeModal();
-  renderInventory();
-}
+  if (newQty === 0) await addShopItem(newName);
+  closeModal(); renderInventory();
+};
 
-function deleteItem() {
+window.deleteItem = async function() {
   if (!modalBarcode) return;
   if (!confirm('Delete this item from inventory?')) return;
-  DB.inventory = DB.inventory.filter(r => r.barcode !== modalBarcode);
-  closeModal();
-  renderInventory();
-}
+  LS.inv = LS.inv.filter(r => r.barcode !== modalBarcode);
+  await fbDeleteInvItem(modalBarcode);
+  closeModal(); renderInventory();
+};
 
 // ════════════════════════════════════════════════════════════
 // SHOPPING LIST
 // ════════════════════════════════════════════════════════════
 function renderShopping() {
-  const shop = DB.shopping;
+  const shop = LS.shop;
   if (!shop.length) {
     document.getElementById('shop-list').innerHTML =
       `<div class="empty"><div class="icon">🛒</div><p>Shopping list is empty.<br>Items auto-appear when stock hits zero.</p></div>`;
     return;
   }
-  document.getElementById('shop-list').innerHTML = shop.map((s, i) =>
+  document.getElementById('shop-list').innerHTML = shop.map((s,i) =>
     `<div class="shop-item">
-      <div class="shop-check ${s.checked ? 'checked' : ''}" onclick="toggleShop(${i})"></div>
-      <div class="shop-name ${s.checked ? 'checked' : ''}">${s.name}</div>
+      <div class="shop-check ${s.checked?'checked':''}" onclick="toggleShop(${i})"></div>
+      <div class="shop-name ${s.checked?'checked':''}">${s.name}</div>
       <button class="shop-del" onclick="removeShop(${i})">×</button>
     </div>`
   ).join('');
 }
 
-function toggleShop(i) {
-  let shop = DB.shopping;
-  shop[i].checked = !shop[i].checked;
-  DB.shopping = shop;
+window.toggleShop = async function(i) {
+  let shop = LS.shop; shop[i].checked = !shop[i].checked;
+  LS.shop = shop;
+  await fbSetShopAll(shop);
   renderShopping();
-}
+};
 
-function removeShop(i) {
-  let shop = DB.shopping;
-  shop.splice(i, 1);
-  DB.shopping = shop;
+window.removeShop = async function(i) {
+  let shop = LS.shop; shop.splice(i,1);
+  LS.shop = shop;
+  await fbSetShopAll(shop);
   renderShopping();
-}
+};
 
-function clearChecked() {
-  DB.shopping = DB.shopping.filter(s => !s.checked);
+window.clearChecked = async function() {
+  const shop = LS.shop.filter(s => !s.checked);
+  LS.shop = shop;
+  await fbSetShopAll(shop);
   renderShopping();
-}
+};
 
-function addToShopManual() {
-  const val = document.getElementById('shop-add-input').value.trim();
+window.addShopManual = async function() {
+  const val = document.getElementById('shop-input').value.trim();
   if (!val) return;
-  addShopItem(val);
-  document.getElementById('shop-add-input').value = '';
+  await addShopItem(val);
+  document.getElementById('shop-input').value = '';
   renderShopping();
-}
+};
 
-function exportShopping() {
-  const text = DB.shopping.map(s => (s.checked ? '✓ ' : '• ') + s.name).join('\n');
-  if (navigator.share) {
-    navigator.share({ title: 'Shopping List', text });
-  } else {
-    navigator.clipboard.writeText(text).then(() => alert('Copied to clipboard!'));
-  }
-}
+window.shareShopList = function() {
+  const text = LS.shop.map(s => (s.checked ? '✓ ' : '• ') + s.name).join('\n');
+  if (navigator.share) navigator.share({ title:'Shopping List', text });
+  else navigator.clipboard.writeText(text).then(() => alert('Copied to clipboard!'));
+};
 
 // ════════════════════════════════════════════════════════════
-// SETTINGS / STATS
+// SETTINGS
 // ════════════════════════════════════════════════════════════
 function renderSettings() {
-  const inv   = DB.inventory;
-  const total = inv.reduce((s, r) => s + r.quantity, 0);
-  const value = inv.reduce((s, r) => s + (r.price || 0) * r.quantity, 0);
-  const cats  = {};
-  inv.forEach(r => { cats[r.category] = (cats[r.category] || 0) + 1; });
-
+  const inv   = LS.inv;
+  const total = inv.reduce((s,r) => s + r.quantity, 0);
+  const value = inv.reduce((s,r) => s + (r.price||0) * r.quantity, 0);
+  const cats  = {}; inv.forEach(r => cats[r.category] = (cats[r.category]||0)+1);
   document.getElementById('stats-card').innerHTML = [
-    ['Total items tracked', inv.length + ' items'],
-    ['Total units in stock', total + ' units'],
-    ['Estimated value', value > 0 ? '$' + value.toFixed(2) : 'N/A — add prices'],
-    ['Food items', (cats.Food || 0) + ' items'],
-    ['Electronics', (cats.Electronics || 0) + ' items'],
-    ['Appliances', (cats.Appliances || 0) + ' items'],
-    ['Other', (cats.Other || 0) + ' items'],
-  ].map(([label, val]) => `
-    <div class="setting-row">
-      <div class="setting-label">${label}</div>
-      <div style="font-size:14px;font-weight:600;font-family:var(--mono);color:var(--ink-1)">${val}</div>
-    </div>`).join('');
-
-  const raw  = JSON.stringify(localStorage);
-  const size = new Blob([raw]).size;
-  document.getElementById('storage-size').textContent =
-    size > 1024 ? (size / 1024).toFixed(1) + ' KB' : size + ' B';
+    ['Items tracked', inv.length],
+    ['Total units',   total],
+    ['Est. value',    value > 0 ? '$' + value.toFixed(2) : 'Add prices to calculate'],
+    ['Food',          cats.Food || 0],
+    ['Electronics',   cats.Electronics || 0],
+    ['Appliances',    cats.Appliances || 0],
+    ['Other',         cats.Other || 0],
+  ].map(([l,v]) =>
+    `<div class="setting-row"><div class="setting-label">${l}</div>
+     <div class="setting-val">${v}</div></div>`
+  ).join('');
 }
 
 // ════════════════════════════════════════════════════════════
 // EXPORT / IMPORT
 // ════════════════════════════════════════════════════════════
-function exportCSV(type) {
+window.exportCSV = function(type) {
   let csv, name;
   if (type === 'inventory') {
     const rows = [['Barcode','Name','Category','Quantity','Price','Last Updated']];
-    DB.inventory.forEach(r => rows.push([
-      r.barcode, r.name, r.category, r.quantity,
-      r.price != null ? r.price.toFixed(2) : '',
-      r.updated ? r.updated.split('T')[0] : ''
-    ]));
-    csv  = rows.map(r => r.map(v => `"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+    LS.inv.forEach(r => rows.push([r.barcode, r.name, r.category, r.quantity,
+      r.price != null ? Number(r.price).toFixed(2) : '', r.updated ? r.updated.split('T')[0] : '']));
+    csv = rows.map(r => r.map(v => `"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
     name = 'inventory_' + today() + '.csv';
   } else {
     const rows = [['Item','Needed','Date Added']];
-    DB.shopping.forEach(s => rows.push([s.name, s.checked ? 'No' : 'Yes', s.added ? s.added.split('T')[0] : '']));
-    csv  = rows.map(r => r.map(v => `"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+    LS.shop.forEach(s => rows.push([s.name, s.checked ? 'No':'Yes', s.added ? s.added.split('T')[0] : '']));
+    csv = rows.map(r => r.map(v => `"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
     name = 'shopping_' + today() + '.csv';
   }
   dlFile(csv, name, 'text/csv');
-}
+};
 
-function exportJSON() {
-  const data = {
-    exported: new Date().toISOString(),
-    inventory: DB.inventory,
-    shopping:  DB.shopping,
-    cache:     DB.cache
-  };
-  dlFile(JSON.stringify(data, null, 2), 'inventory_backup_' + today() + '.json', 'application/json');
-}
+window.exportJSON = function() {
+  dlFile(JSON.stringify({ exported: new Date().toISOString(), inventory: LS.inv, shopping: LS.shop, cache: LS.cache }, null, 2),
+    'inventory_backup_' + today() + '.json', 'application/json');
+};
 
-function importJSON(input) {
-  const file = input.files[0];
-  if (!file) return;
+window.importJSON = function(input) {
+  const file = input.files[0]; if (!file) return;
   const reader = new FileReader();
   reader.onload = e => {
     try {
       const data = JSON.parse(e.target.result);
       if (!data.inventory) { alert('Invalid backup file.'); return; }
-      if (!confirm(`Import ${data.inventory.length} inventory items and ${(data.shopping||[]).length} shopping items? This will replace your current data.`)) return;
-      DB.inventory = data.inventory || [];
-      DB.shopping  = data.shopping  || [];
-      if (data.cache) DB.cache = data.cache;
-      alert('Restore complete!');
-      renderSettings();
-    } catch(err) {
-      alert('Could not read backup file: ' + err.message);
-    }
+      if (!confirm(`Import ${data.inventory.length} items? This replaces current local data.`)) return;
+      LS.inv = data.inventory || []; LS.shop = data.shopping || [];
+      if (data.cache) LS.cache = data.cache;
+      alert('Restored!'); renderSettings();
+    } catch(err) { alert('Could not read file: ' + err.message); }
   };
-  reader.readAsText(file);
-  input.value = '';
-}
+  reader.readAsText(file); input.value = '';
+};
 
-function clearAllData() {
-  if (!confirm('Delete ALL inventory and shopping data? This cannot be undone.')) return;
-  if (!confirm('Are you sure? All data will be permanently deleted.')) return;
-  localStorage.removeItem('inv_data');
-  localStorage.removeItem('inv_shop');
-  localStorage.removeItem('inv_cache');
-  renderSettings();
-  alert('All data cleared.');
-}
-
-function dlFile(content, filename, mime) {
-  const a   = document.createElement('a');
-  a.href    = URL.createObjectURL(new Blob([content], { type: mime }));
-  a.download = filename;
-  a.click();
-  URL.revokeObjectURL(a.href);
-}
-
-function today() {
-  return new Date().toISOString().split('T')[0].replace(/-/g,'');
-}
+window.clearLocal = function() {
+  if (!confirm('Clear all local data?')) return;
+  if (!confirm('Are you sure? Cannot be undone.')) return;
+  ['inv_data','inv_shop','inv_cache'].forEach(k => localStorage.removeItem(k));
+  renderSettings(); renderInventory(); renderShopping();
+  alert('Local data cleared.');
+};
 
 // ════════════════════════════════════════════════════════════
-// STATUS
+// UI HELPERS
 // ════════════════════════════════════════════════════════════
 function setStatus(msg, type) {
   const el = document.getElementById('status');
   el.innerHTML = msg; el.className = type || 'idle';
 }
 
-// ════════════════════════════════════════════════════════════
-// STARTUP
-// ════════════════════════════════════════════════════════════
-window.addEventListener('DOMContentLoaded', () => {
-  initScanner();
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('sw.js').catch(() => {});
-  }
-});
+function syncMsg(msg, type) {
+  const el = document.getElementById('status-sync');
+  el.innerHTML = msg;
+  el.style.color = type === 'ok' ? 'var(--green)' : type === 'err' ? 'var(--red)' : 'var(--amber)';
+}
+
+function setSyncDot(state) {
+  const d = document.getElementById('sync-dot');
+  d.className = 'sync-dot' + (state ? ' ' + state : '');
+}
+
+function updateSyncLabel(state) {
+  const labels = {
+    live:       '🟢 Syncing live with household',
+    connecting: '🟡 Connecting to sync…',
+    error:      '🔴 Sync error — check settings',
+    off:        'Local only — set up sync in Export tab'
+  };
+  document.getElementById('sync-status-label').textContent = labels[state] || labels.off;
+}
+
+function dlFile(content, filename, mime) {
+  const a = document.createElement('a');
+  a.href  = URL.createObjectURL(new Blob([content], { type: mime }));
+  a.download = filename; a.click(); URL.revokeObjectURL(a.href);
+}
+
+function today() { return new Date().toISOString().split('T')[0].replace(/-/g,''); }
+function slugify(s) { return s.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,''); }
+
 </script>
 </body>
 </html>
